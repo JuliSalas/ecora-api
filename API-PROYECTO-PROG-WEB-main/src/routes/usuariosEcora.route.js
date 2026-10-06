@@ -106,9 +106,14 @@ router.post('/', async (req, res) => {
 
         }
 
+        if (typeof correo !== 'string' || correo.trim() === '') {
+            return res.status(400).json({
+                msj: 'El correo debe ser una cadena de texto válida'
+            });
+        }
 
         const usuarioExistente = await Usuario.findOne({
-            correo: correo
+            correo: { $eq: correo }
         });
 
         if (usuarioExistente) {
