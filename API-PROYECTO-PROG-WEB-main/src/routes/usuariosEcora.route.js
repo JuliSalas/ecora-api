@@ -112,8 +112,10 @@ router.post('/', async (req, res) => {
             });
         }
 
+        const correoConsulta = String(correo);
+
         const usuarioExistente = await Usuario.findOne({
-            correo: { $eq: correo }
+            correo: { $eq: correoConsulta }
         });
 
         if (usuarioExistente) {
