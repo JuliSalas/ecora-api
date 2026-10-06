@@ -48,8 +48,13 @@ const emailRoute = require('./routes/email.route')
 
 app.use('/api/email', emailRoute);
 
-connectDB();
-
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
+connectDB()
+    .then(() => {
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`Servidor escuchando en http://localhost:${PORT}`);
+        });
+    })
+    .catch((error) => {
+        console.error('No se pudo iniciar el servidor:', error.message);
+        process.exit(1);
+    });
