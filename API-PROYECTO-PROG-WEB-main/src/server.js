@@ -15,7 +15,7 @@ app.use(cors());
 //Ruta principal
 app.get('/', (req, res) => {
     res.status(200).json({
-        msj: 'API funcionando correctamente',
+        msj: 'Bienvenido a la API de Ecora',
         estado: 'Ok, funcionando.'
     });
 });
