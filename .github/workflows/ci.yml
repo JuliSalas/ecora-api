@@ -1,0 +1,58 @@
+name: CI - Pruebas API
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar la API
+        uses: actions/checkout@v4
+        with:
+          path: api
+
+      - name: Descargar el repo de pruebas
+        uses: actions/checkout@v4
+        with:
+          repository: JuliSalas/ecora-api-tests
+          path: tests
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependencias de la API
+        working-directory: api
+        run: npm ci
+
+      - name: Levantar la API en segundo plano
+        working-directory: api
+        run: npm start &
+        env:
+          PORT: 3000
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+
+      - name: Esperar a que la API responda
+        run: npx wait-on tcp:3000 --timeout 60000
+
+      - name: Instalar dependencias de las pruebas
+        working-directory: tests
+        run: npm ci
+        
+      - name: Ejecutar pruebas API
+        working-directory: tests
+        run: npm test -- --testPathIgnorePatterns=ordenes.extras
+        env:
+          BASE_URL: http://localhost:3000
+          ADMIN_CORREO: ${{ secrets.ADMIN_CORREO }}
+          ADMIN_CONTRASENNA: ${{ secrets.ADMIN_CONTRASENNA }}
+          CLIENTE_CORREO: ${{ secrets.CLIENTE_CORREO }}
+          CLIENTE_CONTRASENNA: ${{ secrets.CLIENTE_CONTRASENNA }}
