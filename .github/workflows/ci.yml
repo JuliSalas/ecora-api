@@ -31,7 +31,7 @@ jobs:
       - name: Instalar dependencias de la API
         working-directory: api
         run: npm ci
-        
+
       - name: Levantar la API con cobertura
         working-directory: api
         run: npx c8 --reporter=lcov --reports-dir=coverage node src/server.js &
@@ -41,7 +41,23 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
 
-      # Después de ejecutar las pruebas:
+      - name: Esperar a que la API responda
+        run: npx wait-on tcp:3000 --timeout 60000
+
+      - name: Instalar dependencias de las pruebas
+        working-directory: tests
+        run: npm ci
+
+      - name: Ejecutar pruebas API
+        working-directory: tests
+        run: npm test -- --testPathIgnorePatterns=ordenes.extras
+        env:
+          BASE_URL: http://localhost:3000
+          ADMIN_CORREO: ${{ secrets.ADMIN_CORREO }}
+          ADMIN_CONTRASENNA: ${{ secrets.ADMIN_CONTRASENNA }}
+          CLIENTE_CORREO: ${{ secrets.CLIENTE_CORREO }}
+          CLIENTE_CONTRASENNA: ${{ secrets.CLIENTE_CONTRASENNA }}
+
       - name: Detener la API y generar cobertura
         if: always()
         working-directory: api
@@ -56,20 +72,3 @@ jobs:
           projectBaseDir: api
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: Esperar a que la API responda
-        run: npx wait-on tcp:3000 --timeout 60000
-
-      - name: Instalar dependencias de las pruebas
-        working-directory: tests
-        run: npm ci
-        
-      - name: Ejecutar pruebas API
-        working-directory: tests
-        run: npm test -- --testPathIgnorePatterns=ordenes.extras
-        env:
-          BASE_URL: http://localhost:3000
-          ADMIN_CORREO: ${{ secrets.ADMIN_CORREO }}
-          ADMIN_CONTRASENNA: ${{ secrets.ADMIN_CONTRASENNA }}
-          CLIENTE_CORREO: ${{ secrets.CLIENTE_CORREO }}
-          CLIENTE_CONTRASENNA: ${{ secrets.CLIENTE_CONTRASENNA }}
