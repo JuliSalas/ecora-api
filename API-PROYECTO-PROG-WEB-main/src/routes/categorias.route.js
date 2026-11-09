@@ -30,6 +30,27 @@ router.get('/', async (req, res) => {
 
 });
 
+router.get('/:id', async (req, res) => {
+    try {
+        const categoria = await Categorias.findById(req.params.id);
+
+        if (!categoria) {
+            return res.status(404).json({
+                msj: 'Categoria no encontrada'
+            });
+        }
+
+        await Categorias.findById(req.params.id);
+
+        res.json(categoria);
+
+    } catch (error) {
+        res.status(400).json({
+            msj: 'Error al encontrar la categoria: ' + error.message
+        });
+    }
+});
+
 
 router.post('/', async (req, res) => {
 

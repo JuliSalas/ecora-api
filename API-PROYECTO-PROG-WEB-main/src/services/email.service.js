@@ -487,7 +487,7 @@ async function sendFacturaEmail(orden, usuario, productos) {
 
   const response = await resend.emails.send({
     from: 'Ecora <onboarding@resend.dev>',
-    to: ['squiross@ucenfotec.ac.cr'], 
+    to: [''],
     subject: `Nueva orden #${orden.id} — Ecora`,
     html: `
       <!DOCTYPE html>

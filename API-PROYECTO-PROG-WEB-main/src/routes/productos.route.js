@@ -30,6 +30,27 @@ router.get('/', async (req, res) => {
 
 });
 
+router.get('/:id', async (req, res) => {
+    try {
+        const producto = await Productos.findById(req.params.id);
+
+        if (!producto) {
+            return res.status(404).json({
+                msj: 'Producto no encontrado'
+            });
+        }
+
+        await Productos.findById(req.params.id);
+
+        res.json(producto);
+
+    } catch (error) {
+        res.status(400).json({
+            msj: 'Error al encontrar el producto: ' + error.message
+        });
+    }
+});
+
 
 router.post('/', async (req, res) => {
     try {
