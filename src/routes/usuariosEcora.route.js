@@ -187,7 +187,7 @@ router.post('/iniciar-sesion', async (req, res) => {
 
         // Si el usuario no existe
         if (!usuario) {
-            return res.status(401).json({
+            return res.status(200).json({
                 msj: 'Credenciales inválidas.'
             });
         }
